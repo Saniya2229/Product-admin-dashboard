@@ -205,11 +205,15 @@ function ProductsDashboardContent() {
   const handleToggleDelay = () => {
     setSimulatedDelay((prev) => {
       const next = prev === 0 ? 2000 : 0;
-      info(
-        next > 0
-          ? 'Simulated 2000ms delay active. Fast typing will prove older requests never overwrite newer ones.'
-          : 'Normal network delay restored.'
-      );
+      // Toast must be called outside the updater to avoid
+      // "Cannot update ToastProvider while rendering ProductsDashboardContent"
+      setTimeout(() => {
+        info(
+          next > 0
+            ? 'Simulated 2000ms delay active. Fast typing will prove older requests never overwrite newer ones.'
+            : 'Normal network delay restored.'
+        );
+      }, 0);
       return next;
     });
   };
