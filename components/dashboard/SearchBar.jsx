@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Loader2, Clock } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -13,22 +11,36 @@ export default function SearchBar({
 }) {
   const [inputValue, setInputValue] = useState(initialValue);
   const debouncedValue = useDebounce(inputValue, 450);
+  const lastDispatchedRef = useRef(initialValue);
 
   // Sync internal state if initialValue changes externally (e.g. back/forward navigation or URL reset)
   useEffect(() => {
     setInputValue(initialValue);
+    lastDispatchedRef.current = initialValue;
   }, [initialValue]);
 
-  // When debounced value changes, trigger search callback
+  // When debounced value changes, trigger search callback only if it actually differs from what was last dispatched
   useEffect(() => {
-    if (debouncedValue !== initialValue) {
+    if (debouncedValue !== lastDispatchedRef.current) {
+      lastDispatchedRef.current = debouncedValue;
       onSearch(debouncedValue);
     }
-  }, [debouncedValue, initialValue, onSearch]);
+  }, [debouncedValue, onSearch]);
 
   const handleClear = () => {
     setInputValue('');
+    lastDispatchedRef.current = '';
     onSearch('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (inputValue !== lastDispatchedRef.current) {
+        lastDispatchedRef.current = inputValue;
+        onSearch(inputValue);
+      }
+    }
   };
 
   const isDebouncing = inputValue !== debouncedValue;
@@ -43,9 +55,11 @@ export default function SearchBar({
 
         {/* Search Input */}
         <input
+          id="search-input"
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Search products by title, brand, description..."
           className="w-full pl-10 pr-20 py-2.5 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-2xs"
         />
@@ -58,6 +72,7 @@ export default function SearchBar({
 
           {inputValue && (
             <button
+              id="clear-search-btn"
               type="button"
               onClick={handleClear}
               className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
