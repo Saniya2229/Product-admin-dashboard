@@ -10,7 +10,7 @@ The application provides authenticated product management with pagination, debou
 
 | Resource              | Link                                         |
 | --------------------- | -------------------------------------------- |
-| **Live Demo**         | `ADD_YOUR_VERCEL_OR_NETLIFY_URL_HERE`        |
+| **Live Demo**         | `product-admin-dashboard-pi-olive.vercel.app`        |
 | **GitHub Repository** | `ADD_YOUR_PUBLIC_GITHUB_REPOSITORY_URL_HERE` |
 
 ---
