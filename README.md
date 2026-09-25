@@ -10,8 +10,8 @@ The application provides authenticated product management with pagination, debou
 
 | Resource              | Link                                         |
 | --------------------- | -------------------------------------------- |
-| **Live Demo**         | `product-admin-dashboard-pi-olive.vercel.app`        |
-| **GitHub Repository** | `ADD_YOUR_PUBLIC_GITHUB_REPOSITORY_URL_HERE` |
+| **Live Demo**         | product-admin-dashboard-pi-olive.vercel.app        |
+| **GitHub Repository** | https://github.com/Saniya2229/Product-admin-dashboard |
 
 ---
 
@@ -263,8 +263,8 @@ public/
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd <your-project-folder>
+git clone https://github.com/Saniya2229/Product-admin-dashboard
+cd Product-admin-dashboard
 ```
 
 ### 2. Install dependencies
