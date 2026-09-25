@@ -1,8 +1,7 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { Star, Eye, Edit2, Trash2, PackageCheck, AlertTriangle } from 'lucide-react';
+import { getProductImage, formatPrice, getStockStatus } from '@/utils/productHelpers';
 
 export default function ProductTable({ products, onEdit, onDelete }) {
   return (
@@ -22,8 +21,8 @@ export default function ProductTable({ products, onEdit, onDelete }) {
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
             {products.map((product) => {
-              const isLowStock = product.stock <= 5;
-              const isOutOfStock = product.stock === 0;
+              const { isOutOfStock, isLowStock } = getStockStatus(product.stock);
+              const imageUrl = getProductImage(product);
 
               return (
                 <tr
@@ -33,10 +32,10 @@ export default function ProductTable({ products, onEdit, onDelete }) {
                   {/* Thumbnail */}
                   <td className="py-3.5 px-6">
                     <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 p-1 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
-                      {product.thumbnail || product.images?.[0] ? (
+                      {imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={product.thumbnail || product.images[0]}
+                          src={imageUrl}
                           alt={product.title}
                           className="w-full h-full object-contain"
                           loading="lazy"
@@ -74,7 +73,7 @@ export default function ProductTable({ products, onEdit, onDelete }) {
                   <td className="py-3.5 px-6 text-right">
                     <div className="inline-flex flex-col items-end">
                       <span className="font-bold text-slate-900">
-                        ${Number(product.price).toFixed(2)}
+                        {formatPrice(product.price)}
                       </span>
                       {product.discountPercentage > 0 && (
                         <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded">

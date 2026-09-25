@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Package, AlertCircle, Star, Layers, TrendingUp } from 'lucide-react';
+import { Package, AlertCircle, Star, Layers } from 'lucide-react';
 
 export default function StatsOverview({
   totalProducts = 0,
@@ -22,10 +22,10 @@ export default function StatsOverview({
     {
       title: 'Total Catalog',
       value: totalProducts.toLocaleString(),
-      subtext: 'Active catalog products',
+      subtext: 'Products in current view',
       icon: Package,
       color: 'blue',
-      change: '+12% this month',
+      change: 'Catalog count',
     },
     {
       title: 'Low Stock Alerts',
@@ -38,18 +38,18 @@ export default function StatsOverview({
     {
       title: 'Avg. Rating',
       value: `${avgRating} ★`,
-      subtext: 'Based on customer reviews',
+      subtext: 'Based on current items',
       icon: Star,
       color: 'amber',
-      change: 'High customer satisfaction',
+      change: 'Calculated average',
     },
     {
       title: 'Categories',
-      value: totalCategories || 24,
-      subtext: 'Diverse product lines',
+      value: totalCategories,
+      subtext: 'Available categories',
       icon: Layers,
       color: 'indigo',
-      change: 'Fully categorized',
+      change: 'Catalog taxonomy',
     },
   ];
 

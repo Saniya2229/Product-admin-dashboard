@@ -25,8 +25,11 @@ export function parseQueryParams(searchParams) {
   // Category filter
   const category = (searchParams.get('category') || '').trim();
 
-  // SortBy and Order
-  const sortBy = (searchParams.get('sortBy') || '').trim();
+  // SortBy and Order (validated against allowed fields)
+  const rawSortBy = (searchParams.get('sortBy') || '').trim().toLowerCase();
+  const validSortFields = ['price', 'rating', 'title'];
+  const sortBy = validSortFields.includes(rawSortBy) ? rawSortBy : '';
+
   const rawOrder = (searchParams.get('order') || '').trim().toLowerCase();
   const order = rawOrder === 'desc' ? 'desc' : rawOrder === 'asc' ? 'asc' : '';
 

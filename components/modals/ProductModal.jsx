@@ -1,7 +1,6 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Loader2, AlertCircle } from 'lucide-react';
+import { validateProductForm } from '@/utils/productValidation';
 
 export default function ProductModal({
   isOpen,
@@ -23,6 +22,14 @@ export default function ProductModal({
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper to update individual field state cleanly
+  const updateField = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
 
   // Populate form if editing
   useEffect(() => {
@@ -50,39 +57,15 @@ export default function ProductModal({
 
   if (!isOpen) return null;
 
-  const validate = () => {
-    const errs = {};
-    if (!formData.title.trim()) {
-      errs.title = 'Product title is required';
-    }
-
-    const priceNum = parseFloat(formData.price);
-    if (!formData.price || isNaN(priceNum) || priceNum <= 0) {
-      errs.price = 'Price must be a valid positive number';
-    }
-
-    if (!formData.category) {
-      errs.category = 'Please select a category';
-    }
-
-    const stockNum = parseInt(formData.stock, 10);
-    if (formData.stock === '' || isNaN(stockNum) || stockNum < 0) {
-      errs.stock = 'Stock must be a non-negative integer';
-    }
-
-    if (!formData.description.trim()) {
-      errs.description = 'Please provide a short description';
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return; // Prevent double-clicking
 
-    if (!validate()) return;
+    const validation = validateProductForm(formData);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -151,7 +134,7 @@ export default function ProductModal({
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) => updateField('title', e.target.value)}
               placeholder="e.g. Wireless Noise-Cancelling Headphones"
               disabled={isSubmitting}
               className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${
@@ -171,7 +154,7 @@ export default function ProductModal({
               </label>
               <select
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                onChange={(e) => updateField('category', e.target.value)}
                 disabled={isSubmitting}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all capitalize cursor-pointer"
               >
@@ -194,7 +177,7 @@ export default function ProductModal({
               <input
                 type="text"
                 value={formData.brand}
-                onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                onChange={(e) => updateField('brand', e.target.value)}
                 placeholder="e.g. Sony, Apple"
                 disabled={isSubmitting}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
@@ -213,7 +196,7 @@ export default function ProductModal({
                 step="0.01"
                 min="0.01"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) => updateField('price', e.target.value)}
                 placeholder="299.99"
                 disabled={isSubmitting}
                 className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${
@@ -234,7 +217,7 @@ export default function ProductModal({
                 min="0"
                 step="1"
                 value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                onChange={(e) => updateField('stock', e.target.value)}
                 placeholder="15"
                 disabled={isSubmitting}
                 className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${
@@ -255,7 +238,7 @@ export default function ProductModal({
             <textarea
               rows={3}
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) => updateField('description', e.target.value)}
               placeholder="Detailed description of features, materials, and specifications..."
               disabled={isSubmitting}
               className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none ${

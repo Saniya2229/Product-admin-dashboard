@@ -20,6 +20,19 @@ import ProductModal from '@/components/modals/ProductModal';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 import { PlusCircle, Loader2 } from 'lucide-react';
 
+function matchesCurrentFilters(item, search, category) {
+  if (search) {
+    const q = search.toLowerCase();
+    const titleMatch = item.title?.toLowerCase().includes(q);
+    const descMatch = item.description?.toLowerCase().includes(q);
+    if (!titleMatch && !descMatch) return false;
+  }
+  if (category && category !== 'all') {
+    if (item.category?.toLowerCase() !== category.toLowerCase()) return false;
+  }
+  return true;
+}
+
 function ProductsDashboardContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -100,9 +113,11 @@ function ProductsDashboardContent() {
       // Handle combined Search + Category or specific endpoints
       if (search) {
         // DummyJSON Search API
+        // Note: DummyJSON search does not support server-side category filtering.
+        // We fetch matching search results (up to 250) and filter by category on the client.
         result = await productApi.searchProducts({
           q: search,
-          limit: category ? 0 : limit, // if filtering locally by category, fetch all matches (limit=0)
+          limit: category ? 250 : limit,
           skip: category ? 0 : skip,
           sortBy,
           order,
@@ -203,19 +218,13 @@ function ProductsDashboardContent() {
   };
 
   const handleToggleDelay = () => {
-    setSimulatedDelay((prev) => {
-      const next = prev === 0 ? 2000 : 0;
-      // Toast must be called outside the updater to avoid
-      // "Cannot update ToastProvider while rendering ProductsDashboardContent"
-      setTimeout(() => {
-        info(
-          next > 0
-            ? 'Simulated 2000ms delay active. Fast typing will prove older requests never overwrite newer ones.'
-            : 'Normal network delay restored.'
-        );
-      }, 0);
-      return next;
-    });
+    const nextDelay = simulatedDelay === 0 ? 2000 : 0;
+    setSimulatedDelay(nextDelay);
+    info(
+      nextDelay > 0
+        ? 'Simulated 2000ms delay active. Fast typing will prove older requests never overwrite newer ones.'
+        : 'Normal network delay restored.'
+    );
   };
 
   // CRUD Handlers with Local State Synchronization (Simulated Mutations)
@@ -237,16 +246,26 @@ function ProductsDashboardContent() {
   const handleSaveProduct = async (formData) => {
     if (selectedProductForEdit) {
       // Edit Product
-      const updated = await productApi.updateProduct(
+      await productApi.updateProduct(
         selectedProductForEdit.id,
         formData
       );
-      // Synchronize in local UI state
-      setProducts((prev) =>
-        prev.map((item) =>
-          item.id === selectedProductForEdit.id ? { ...item, ...formData } : item
-        )
-      );
+      const updatedProduct = { ...selectedProductForEdit, ...formData };
+      const stillMatches = matchesCurrentFilters(updatedProduct, search, category);
+
+      if (stillMatches) {
+        setProducts((prev) =>
+          prev.map((item) =>
+            item.id === selectedProductForEdit.id ? updatedProduct : item
+          )
+        );
+      } else {
+        // Product no longer belongs to the current filter/search view
+        setProducts((prev) =>
+          prev.filter((item) => item.id !== selectedProductForEdit.id)
+        );
+        setTotalProducts((prev) => Math.max(0, prev - 1));
+      }
       success(`"${formData.title}" updated successfully!`);
     } else {
       // Add Product
@@ -258,9 +277,14 @@ function ProductsDashboardContent() {
         thumbnail: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&auto=format&fit=crop&q=80',
         rating: 5.0,
       };
-      // Prepend to visible products and increment count
-      setProducts((prev) => [newProductItem, ...prev]);
-      setTotalProducts((prev) => prev + 1);
+
+      const matches = matchesCurrentFilters(newProductItem, search, category);
+      if (matches) {
+        setProducts((prev) => [newProductItem, ...prev]);
+        setTotalProducts((prev) => prev + 1);
+      } else {
+        setTotalProducts((prev) => prev + 1);
+      }
       success(`New product "${formData.title}" added successfully!`);
     }
   };

@@ -45,7 +45,7 @@ export default function ConfirmDeleteModal({
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
               Are you sure you want to remove{' '}
               <span className="font-semibold text-slate-800">&ldquo;{product.title}&rdquo;</span>?
-              This action cannot be undone.
+              This will remove the product from the current view.
             </p>
           </div>
 

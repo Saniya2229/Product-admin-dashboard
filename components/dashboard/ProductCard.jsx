@@ -1,22 +1,21 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { Star, Eye, Edit2, Trash2, PackageCheck, AlertTriangle } from 'lucide-react';
+import { getProductImage, formatPrice, getStockStatus } from '@/utils/productHelpers';
 
 export default function ProductCard({ product, onEdit, onDelete }) {
-  const isLowStock = product.stock <= 5;
-  const isOutOfStock = product.stock === 0;
+  const { isOutOfStock, isLowStock } = getStockStatus(product.stock);
+  const imageUrl = getProductImage(product);
 
   return (
     <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
       <div>
         {/* Top: Image & Badges */}
         <div className="relative w-full h-44 rounded-xl bg-slate-50 overflow-hidden mb-3.5 flex items-center justify-center border border-slate-100">
-          {product.thumbnail || product.images?.[0] ? (
+          {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={product.thumbnail || product.images[0]}
+              src={imageUrl}
               alt={product.title}
               className="w-full h-full object-contain p-2 hover:scale-105 transition-transform duration-300"
               loading="lazy"
@@ -58,7 +57,7 @@ export default function ProductCard({ product, onEdit, onDelete }) {
           {/* Price */}
           <div className="flex items-baseline gap-1.5">
             <span className="text-lg font-extrabold text-slate-900">
-              ${Number(product.price).toFixed(2)}
+              {formatPrice(product.price)}
             </span>
             {product.discountPercentage > 0 && (
               <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">

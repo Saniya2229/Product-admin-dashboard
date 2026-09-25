@@ -1,5 +1,13 @@
 import api from './api';
 
+function buildProductParams({ limit = 20, skip = 0, sortBy = '', order = '', delay = 0, extra = {} } = {}) {
+  const params = { limit, skip, ...extra };
+  if (sortBy) params.sortBy = sortBy;
+  if (order) params.order = order;
+  if (delay) params.delay = delay;
+  return params;
+}
+
 /**
  * Product API Service
  * Encapsulates all product-related calls to DummyJSON.
@@ -17,11 +25,7 @@ export const productApi = {
     delay = 0,
     signal,
   } = {}) {
-    const params = { limit, skip };
-    if (sortBy) params.sortBy = sortBy;
-    if (order) params.order = order;
-    if (delay) params.delay = delay;
-
+    const params = buildProductParams({ limit, skip, sortBy, order, delay });
     const response = await api.get('/products', {
       params,
       signal,
@@ -41,10 +45,14 @@ export const productApi = {
     delay = 0,
     signal,
   } = {}) {
-    const params = { q: q.trim(), limit, skip };
-    if (sortBy) params.sortBy = sortBy;
-    if (order) params.order = order;
-    if (delay) params.delay = delay;
+    const params = buildProductParams({
+      limit,
+      skip,
+      sortBy,
+      order,
+      delay,
+      extra: { q: q.trim() },
+    });
 
     const response = await api.get('/products/search', {
       params,
@@ -87,11 +95,7 @@ export const productApi = {
     delay = 0,
     signal,
   } = {}) {
-    const params = { limit, skip };
-    if (sortBy) params.sortBy = sortBy;
-    if (order) params.order = order;
-    if (delay) params.delay = delay;
-
+    const params = buildProductParams({ limit, skip, sortBy, order, delay });
     const encodedCategory = encodeURIComponent(category);
     const response = await api.get(`/products/category/${encodedCategory}`, {
       params,
