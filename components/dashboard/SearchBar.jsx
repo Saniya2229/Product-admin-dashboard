@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Loader2, Clock } from 'lucide-react';
-import { useDebounce } from '@/hooks/useDebounce';
 
 export default function SearchBar({
   initialValue = '',
@@ -10,40 +9,62 @@ export default function SearchBar({
   onToggleDelay,
 }) {
   const [inputValue, setInputValue] = useState(initialValue);
-  const debouncedValue = useDebounce(inputValue, 450);
-  const lastDispatchedRef = useRef(initialValue);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+  const debounceTimerRef = useRef(null);
 
-  // Sync internal state if initialValue changes externally (e.g. back/forward navigation or URL reset)
+  // Sync internal input value if external initialValue changes (e.g. Reset Filters or Back navigation)
   useEffect(() => {
     setInputValue(initialValue);
-    lastDispatchedRef.current = initialValue;
+    // Cancel any pending timer when initialValue changes externally
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      setIsDebouncing(false);
+    }
   }, [initialValue]);
 
-  // When debounced value changes, trigger search callback only if it actually differs from what was last dispatched
+  // Clean up timer on unmount
   useEffect(() => {
-    if (debouncedValue !== lastDispatchedRef.current) {
-      lastDispatchedRef.current = debouncedValue;
-      onSearch(debouncedValue);
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleInputChange = (e) => {
+    const nextVal = e.target.value;
+    setInputValue(nextVal);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
-  }, [debouncedValue, onSearch]);
+
+    setIsDebouncing(true);
+    debounceTimerRef.current = setTimeout(() => {
+      setIsDebouncing(false);
+      onSearch(nextVal.trim());
+    }, 450);
+  };
 
   const handleClear = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    setIsDebouncing(false);
     setInputValue('');
-    lastDispatchedRef.current = '';
     onSearch('');
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (inputValue !== lastDispatchedRef.current) {
-        lastDispatchedRef.current = inputValue;
-        onSearch(inputValue);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
+      setIsDebouncing(false);
+      onSearch(inputValue.trim());
     }
   };
-
-  const isDebouncing = inputValue !== debouncedValue;
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full max-w-xl">
@@ -58,7 +79,7 @@ export default function SearchBar({
           id="search-input"
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Search products by title, brand, description..."
           className="w-full pl-10 pr-20 py-2.5 rounded-2xl border border-slate-200 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-2xs"
