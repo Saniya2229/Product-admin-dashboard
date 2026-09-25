@@ -1,21 +1,14 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import {
   Package,
-  LayoutDashboard,
-  PlusCircle,
   LogOut,
-  Layers,
-  ChevronRight,
-  ShieldCheck,
   X
 } from 'lucide-react';
 
-export default function Sidebar({ isOpen, onClose, onOpenAddModal }) {
+export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
@@ -49,12 +42,17 @@ export default function Sidebar({ isOpen, onClose, onOpenAddModal }) {
         <div>
           <div className="flex items-center justify-between h-20 px-6 border-b border-slate-50">
             <Link href="/products" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                <span className="font-extrabold text-lg tracking-wider">W</span>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 p-1 flex items-center justify-center overflow-hidden shadow-xs group-hover:scale-105 transition-transform">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="CoreStash Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-base tracking-tight text-slate-900">
-                  WEBUILDER
+                <span className="font-extrabold text-base tracking-tight text-slate-900">
+                  CoreStash
                 </span>
                 <span className="text-[11px] font-medium text-slate-400 -mt-1">
                   Product Admin
@@ -65,7 +63,7 @@ export default function Sidebar({ isOpen, onClose, onOpenAddModal }) {
             {/* Close button for mobile drawer */}
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 lg:hidden"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 lg:hidden cursor-pointer"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />
@@ -101,24 +99,6 @@ export default function Sidebar({ isOpen, onClose, onOpenAddModal }) {
                 </Link>
               );
             })}
-
-            {/* Quick action button in sidebar to Add Product */}
-            {onOpenAddModal && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (onClose) onClose();
-                  onOpenAddModal();
-                }}
-                className="w-full mt-3 flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium text-blue-700 bg-blue-50/80 hover:bg-blue-100/80 transition-colors border border-blue-200/50 cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <PlusCircle className="w-5 h-5 text-blue-600" />
-                  <span>Add Product</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-blue-500" />
-              </button>
-            )}
           </nav>
         </div>
 

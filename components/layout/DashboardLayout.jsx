@@ -20,7 +20,6 @@ export default function DashboardLayout({
         <Sidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
-          onOpenAddModal={onOpenAddModal}
         />
 
         {/* Main Content Area */}

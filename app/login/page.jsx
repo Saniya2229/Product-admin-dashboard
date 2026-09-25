@@ -76,11 +76,16 @@ export default function LoginPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white shadow-xl shadow-blue-500/25 mb-4">
-            <span className="font-extrabold text-2xl tracking-tight">W</span>
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white shadow-xl shadow-slate-200/60 p-2 mb-4 border border-slate-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="CoreStash Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Welcome to WeBuilder
+            Welcome to CoreStash
           </h1>
           <p className="mt-2 text-sm text-slate-500">
             Product Administration & Inventory Dashboard

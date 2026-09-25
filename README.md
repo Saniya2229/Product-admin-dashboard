@@ -1,4 +1,4 @@
-# Product Admin Dashboard
+# CoreStash — Product Admin Dashboard
 
 A responsive and modular **Product Administration Dashboard** built with **Next.js (App Router)**, **React**, **Tailwind CSS**, and **Axios**, powered by the [DummyJSON](https://dummyjson.com) API.
 

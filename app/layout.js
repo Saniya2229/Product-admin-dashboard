@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Product Admin Dashboard | Nexgensis Technologies",
-  description: "Modern production-grade product administration dashboard built with Next.js, React, Tailwind CSS, and Axios.",
+  title: "CoreStash | Product Admin Dashboard",
+  description: "Modern responsive product administration and inventory catalog dashboard built with Next.js, React, Tailwind CSS, and Axios.",
 };
 
 export default function RootLayout({ children }) {
