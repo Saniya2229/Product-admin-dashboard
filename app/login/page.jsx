@@ -50,7 +50,6 @@ export default function LoginPage() {
       success(`Welcome back, ${data.firstName || data.username}!`);
       router.push('/products');
     } catch (err) {
-      console.error('Login failed:', err);
       setError(
         err.message ||
         err.response?.data?.message ||

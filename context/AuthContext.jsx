@@ -21,8 +21,7 @@ export function AuthProvider({ children }) {
       } else {
         setUser(null);
       }
-    } catch (err) {
-      console.error('Error hydrating auth state:', err);
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);

@@ -76,7 +76,6 @@ export default function ProductModal({
       });
       onClose();
     } catch (err) {
-      console.error('Error saving product:', err);
       setErrors((prev) => ({
         ...prev,
         form: err.message || 'Failed to save product. Please try again.',

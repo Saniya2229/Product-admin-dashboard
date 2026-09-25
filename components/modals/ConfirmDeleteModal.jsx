@@ -19,8 +19,8 @@ export default function ConfirmDeleteModal({
     try {
       await onConfirm(product);
       onClose();
-    } catch (err) {
-      console.error('Delete error:', err);
+    } catch {
+      // Handled by caller / toast
     } finally {
       setIsDeleting(false);
     }
